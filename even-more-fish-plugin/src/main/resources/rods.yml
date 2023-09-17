@@ -1,0 +1,10 @@
+test:
+  display: "测试鱼竿"
+  lore:
+    - "这是一个测试行"
+    - "这是一个测试行"
+    - "这是一个测试行"
+    - "这是一个测试行"
+  nbt:
+    fishing-speed: 0.9
+    double-drop: 0.9

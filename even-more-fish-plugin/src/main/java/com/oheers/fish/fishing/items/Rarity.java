@@ -10,6 +10,9 @@ public class Rarity {
 
     public String overridenLore;
     public String permission;
+
+    String name;
+
     String value, colour;
     double weight;
     boolean announce;

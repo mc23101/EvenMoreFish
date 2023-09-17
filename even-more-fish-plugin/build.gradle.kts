@@ -11,6 +11,11 @@ version = "1.6.11.4"
 description = "A fishing extension bringing an exciting new experience to fishing."
 
 repositories {
+    maven("https://lss233.littleservice.cn/repositories/minecraft")
+    maven("https://maven.aliyun.com/repository/jcenter")
+    maven("https://maven.aliyun.com/repository/google")
+    maven("https://maven.aliyun.com/repository/central")
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
     mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/groups/public/")
     maven("https://github.com/deanveloper/SkullCreator/raw/mvn-repo/")

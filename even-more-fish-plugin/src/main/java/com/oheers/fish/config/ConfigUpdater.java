@@ -181,7 +181,7 @@ public class ConfigUpdater {
                     "  - \"&7the fish in your inventory to\"\n" +
                     "  - \"&7make some extra money.\"\n" +
                     "  - \"\"\n" +
-                    "  - \"&e» (Left-click) sell the fish.\"\n" +
+                    "  - \"&e? (Left-click) sell the fish.\"\n" +
                     "# The lore below the error item in /emf shop when the gui contains no items of value.\n" +
                     "error-sell-all-gui-lore:\n" +
                     "  - \"&8Inventory\"\n" +
@@ -192,7 +192,7 @@ public class ConfigUpdater {
                     "  - \"&7the fish in your inventory to\"\n" +
                     "  - \"&7make some extra money.\"\n" +
                     "  - \"\"\n" +
-                    "  - \"&c» (Left-click) sell the fish.\"" +
+                    "  - \"&c? (Left-click) sell the fish.\"" +
                     "# By setting a fish's minimum-length to less than 0, you can create a lengthless fish. This is used when a player fishes a lengthless fish.\n" +
                     "lengthless-fish-caught: \"&l{player} &rhas fished a {rarity_colour}&l{rarity} {rarity_colour}{fish}!\"";
     private static String CONFIG_UPDATE_8 =

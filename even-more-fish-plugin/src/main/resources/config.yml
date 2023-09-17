@@ -1,12 +1,18 @@
-# Is the plugin enabled?
+# 是否开启插件?
 enabled: true
 
 # The locale of the message file
 # Currently: en, cs, de, es, fr, ja, ko, nl, pl, pt-br, ru, tr, vn, zh_cn
 # Delete messages.yml before changing this
+# 插件的语言文件
 locale: en
 
+fishing:
+  maxWaitTime: 600
+  minWaitTime: 200
+
 # Should EMF fish only be given during a competition?
+# 是否应该只在比赛期间给予EMF鱼
 fish-only-in-competition: false
 
 # Would you like to test out new experimental features? These are partially working features such as the database that
@@ -45,6 +51,8 @@ barstyle: 'SEGMENTED_10'
 
 # Requires that the fishing rod to have the "emf-rod-nbt" value in order to catch custom fish defined in fish.yml.
 # This allows you to sell rods that will be the only ones able to catch EvenMoreFish fish.
+# 要求鱼竿具有“emf-rod-nbt”值，以便捕获在fish.yml中定义的自定义鱼。
+# 这允许你出售钓竿，这将是唯一能够捕获更多鱼的鱼。
 require-nbt-rod: false
 
 # This defines the item given with the "/emf admin rod-nbt -p:Playername" command. It uses the same formatting as the fish

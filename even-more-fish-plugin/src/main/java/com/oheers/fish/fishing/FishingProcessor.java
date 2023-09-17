@@ -43,11 +43,15 @@ public class FishingProcessor implements Listener {
             return;
         }
 
+        ItemStack rodInHand = event.getPlayer().getInventory().getItemInMainHand();
+        NBTItem nbtItem = new NBTItem(rodInHand);
+
+
+        //是否开启检查 require-nbt-rod 的值,如果开启检查，且不符合条件，那么取消钓鱼
         if (EvenMoreFish.mainConfig.requireNBTRod()) {
             //check if player is using the fishing rod with correct nbt value.
-            ItemStack rodInHand = event.getPlayer().getInventory().getItemInMainHand();
+            //检查玩家是否使用正确的NBT值的鱼竿。
             if (rodInHand.getType() != Material.AIR) {
-                NBTItem nbtItem = new NBTItem(rodInHand);
                 if (Boolean.FALSE.equals(NbtUtils.hasKey(nbtItem, NbtUtils.Keys.EMF_ROD_NBT))) {
                     //tag is null or tag is false
                     return;
@@ -55,8 +59,10 @@ public class FishingProcessor implements Listener {
             }
         }
 
+        // 是否开启钓鱼权限检查
         if (EvenMoreFish.mainConfig.requireFishingPermission()) {
             //check if player have permssion to fish emf fishes
+            //检查玩家是否有钓鱼的权限
             if (!EvenMoreFish.permission.has(event.getPlayer(), "emf.use_rod")) {
                 if (event.getState() == PlayerFishEvent.State.FISHING) {//send msg only when throw the lure
                     new Message(ConfigMessage.NO_PERMISSION_FISHING).broadcast(event.getPlayer(), true, false);
@@ -65,11 +71,38 @@ public class FishingProcessor implements Listener {
             }
         }
 
+
+        // 魔改的代码逻辑
+
+        // 判断鱼竿有没有时间加成
+        if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.FISHING_SPEED)){
+            Float value=NbtUtils.getFloat(nbtItem,NbtUtils.Keys.FISHING_SPEED);
+            if(value!=null){
+                int maxTime= (int)Math.floor(EvenMoreFish.mainConfig.getFishingMaxWaitTime()*(1-value));
+                int minTime=(int)Math.floor(EvenMoreFish.mainConfig.getFishingMinWaitTime()*(1-value));
+                event.getHook().setMinWaitTime(minTime);
+                event.getHook().setMaxWaitTime(maxTime);
+            }
+        }
+
+
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
             ItemStack fish = getFish(event.getPlayer(), event.getHook().getLocation(), event.getPlayer().getInventory().getItemInMainHand(), true, true);
 
             if (fish == null) {
                 return;
+            }
+
+            if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.DOUBLE_DROP)){
+                Float change=NbtUtils.getFloat(nbtItem,NbtUtils.Keys.DOUBLE_DROP);
+                if(change!=null){
+                    Random rand=new Random();
+                    float randDouble = rand.nextFloat();
+                    if (randDouble<=change){
+                        fish.setAmount(2);
+                        event.getPlayer().sendMessage("恭喜你获得双倍奖励!");
+                    }
+                }
             }
 
             // replaces the fishing item with a custom evenmorefish fish.
@@ -287,6 +320,7 @@ public class FishingProcessor implements Listener {
 
         List<Rarity> allowedRarities = new ArrayList<>();
 
+
         int idx = 0;
 
         /* If allowed rarities has objects, it means we've run through and removed the Christmas rarity. Don't run
@@ -322,19 +356,40 @@ public class FishingProcessor implements Listener {
 
         double totalWeight = 0;
 
+
+
         for (Rarity r : allowedRarities) {
+            int addWeight=0;
+            if(fisher!=null){
+                ItemStack mainHand=fisher.getInventory().getItemInMainHand();
+                NBTItem nbtItem=new NBTItem(mainHand);
+                if(NbtUtils.hasKey(nbtItem,r.getValue())){
+                    Integer value=NbtUtils.getInteger(nbtItem,r.getValue());
+                    addWeight=value==null?0:value;
+                }
+            }
             if (boostRate != -1.0 && boostedRarities != null && boostedRarities.contains(r)) {
-                totalWeight += (r.getWeight() * boostRate);
+                totalWeight += ((r.getWeight()+addWeight) * boostRate);
             } else {
-                totalWeight += r.getWeight();
+                totalWeight += (r.getWeight()+addWeight);
             }
         }
 
         for (double r = Math.random() * totalWeight; idx < allowedRarities.size() - 1; ++idx) {
-            if (boostRate != -1.0 && boostedRarities != null && boostedRarities.contains(allowedRarities.get(idx))) {
-                r -= allowedRarities.get(idx).getWeight() * boostRate;
+            Rarity rarity=allowedRarities.get(idx);
+            int addWeight=0;
+            if(fisher!=null){
+                ItemStack mainHand=fisher.getInventory().getItemInMainHand();
+                NBTItem nbtItem=new NBTItem(mainHand);
+                if(NbtUtils.hasKey(nbtItem,rarity.getValue())){
+                    Integer value=NbtUtils.getInteger(nbtItem,rarity.getValue());
+                    addWeight=value==null?0:value;
+                }
+            }
+            if (boostRate != -1.0 && boostedRarities != null && boostedRarities.contains(rarity)) {
+                r -= (rarity.getWeight()+addWeight) * boostRate;
             } else {
-                r -= allowedRarities.get(idx).getWeight();
+                r -= rarity.getWeight()+addWeight;
             }
             if (r <= 0.0) break;
         }
@@ -399,7 +454,7 @@ public class FishingProcessor implements Listener {
 
         List<Fish> available = new ArrayList<>();
 
-        // Protection against /emf admin reload causing the plugin to be unable to get the rarity
+        // 防止/emf admin重载导致插件无法获得稀有性
         if (EvenMoreFish.fishCollection.get(r) == null)
             r = randomWeightedRarity(p, 1, null, EvenMoreFish.fishCollection.keySet());
 
@@ -444,7 +499,7 @@ public class FishingProcessor implements Listener {
 
         Fish returningFish;
 
-        // checks whether weight calculations need doing for fish
+        // 检查是否需要为鱼做权重计算
         returningFish = randomWeightedFish(available, boostRate, boostedFish);
 
         if (Competition.isActive() || !EvenMoreFish.mainConfig.isCompetitionUnique() || (EvenMoreFish.raritiesCompCheckExempt && returningFish.isCompExemptFish())) {

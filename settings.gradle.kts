@@ -5,8 +5,27 @@ include(":even-more-fish-addons-j8")
 include(":even-more-fish-addons-j17")
 include(":even-more-fish-plugin")
 
-
 dependencyResolutionManagement {
+    repositories {
+        maven("https://lss233.littleservice.cn/repositories/minecraft")
+        maven("https://maven.aliyun.com/repository/jcenter")
+        maven("https://maven.aliyun.com/repository/google")
+        maven("https://maven.aliyun.com/repository/central")
+        maven("https://maven.aliyun.com/repository/gradle-plugin")
+        mavenCentral()
+        maven("https://hub.spigotmc.org/nexus/content/groups/public/")
+        maven("https://github.com/deanveloper/SkullCreator/raw/mvn-repo/")
+        maven("https://jitpack.io")
+        maven("https://maven.enginehub.org/repo/")
+        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+        maven("https://raw.githubusercontent.com/FabioZumbi12/RedProtect/mvn-repo/")
+        maven("https://libraries.minecraft.net/")
+        maven("https://nexus.neetgames.com/repository/maven-releases/")
+        maven("https://repo.codemc.org/repository/maven-public/")
+        maven("https://repo.spongepowered.org/maven/")
+        maven("https://repo.essentialsx.net/releases/")
+        maven("https://repo.auxilor.io/repository/maven-public/")
+    }
     versionCatalogs {
         create("libs") {
             library("spigot-api", "org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")

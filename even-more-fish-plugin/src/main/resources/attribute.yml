@@ -1,0 +1,11 @@
+# 钓鱼速度
+fishing-speed:
+  name: '钓鱼速度'
+
+# 双倍掉落
+double-drop:
+  name: '双倍掉落'
+
+# 比赛加成
+point-addition:
+  name: '比赛加成'

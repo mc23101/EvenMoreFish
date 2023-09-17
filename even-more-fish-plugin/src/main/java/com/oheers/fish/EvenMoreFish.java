@@ -20,6 +20,7 @@ import com.oheers.fish.fishing.items.Fish;
 import com.oheers.fish.fishing.items.Names;
 import com.oheers.fish.fishing.items.Rarity;
 import com.oheers.fish.gui.FillerStyle;
+import com.oheers.fish.rods.Rod;
 import com.oheers.fish.selling.InteractHandler;
 import com.oheers.fish.selling.SellGUI;
 import com.oheers.fish.utils.AntiCraft;
@@ -62,7 +63,13 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
     public static FishFile fishFile;
     public static RaritiesFile raritiesFile;
     public static BaitFile baitFile;
+
+    public static RodFile rodFile;
+
+    public static Map<String,Rod> rodMap=new HashMap<>();
+
     public static Messages msgs;
+
     public static MainConfig mainConfig;
     public static CompetitionConfig competitionConfig;
     public static Xmas2022Config xmas2022Config;
@@ -134,11 +141,14 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
         mainConfig = new MainConfig(this);
         msgs = new Messages(this);
 
+        //加载其他依赖插件
         saveAdditionalDefaultAddons();
         this.addonManager = new AddonManager(this);
         this.addonManager.load();
 
+        //加载配置文件
         fishFile = new FishFile(this);
+        rodFile=new RodFile(this);
         raritiesFile = new RaritiesFile(this);
         baitFile = new BaitFile(this);
         competitionConfig = new CompetitionConfig(this);

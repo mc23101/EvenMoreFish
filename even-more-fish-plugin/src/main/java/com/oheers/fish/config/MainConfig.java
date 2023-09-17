@@ -255,4 +255,12 @@ public class MainConfig {
     public boolean useAdditionalAddons() {
         return config.getBoolean("addons.additional-addons", true);
     }
+
+    public Integer getFishingMaxWaitTime(){
+        return config.getInt("fishing.maxWaitTime", 600);
+    }
+
+    public Integer getFishingMinWaitTime(){
+        return config.getInt("fishing.minWaitTime", 200);
+    }
 }

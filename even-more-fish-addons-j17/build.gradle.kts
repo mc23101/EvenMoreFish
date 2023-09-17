@@ -4,6 +4,12 @@ plugins {
 
 
 repositories {
+    maven("https://lss233.littleservice.cn/repositories/minecraft")
+    maven("https://maven.aliyun.com/repository/jcenter")
+    maven("https://maven.aliyun.com/repository/google")
+    maven("https://maven.aliyun.com/repository/central")
+    maven("https://maven.aliyun.com/repository/gradle-plugin")
+    maven("https://repo.auxilor.io/repository/maven-public/")
     maven("https://repo.auxilor.io/repository/maven-public/")
 }
 

@@ -10,8 +10,10 @@ import com.oheers.fish.config.messages.ConfigMessage;
 import com.oheers.fish.config.messages.Message;
 import com.oheers.fish.fishing.items.Fish;
 import com.oheers.fish.fishing.items.Rarity;
+import com.oheers.fish.rods.Rod;
 import com.oheers.fish.selling.SellGUI;
 import com.oheers.fish.xmas2022.XmasGUI;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -44,7 +46,8 @@ public class CommandCentre implements TabCompleter, CommandExecutor {
                 "nbt-rod",
                 "reload",
                 "addons",
-                "version"
+                "version",
+                "give"
         );
 
         compTabs = Arrays.asList(
@@ -592,6 +595,7 @@ class Controls {
                 EvenMoreFish.fishFile.reload();
                 EvenMoreFish.raritiesFile.reload();
                 EvenMoreFish.baitFile.reload();
+                EvenMoreFish.rodFile.reload();
 
                 plugin.reload();
 
@@ -637,6 +641,33 @@ class Controls {
                 new Message(messageList).broadcast(sender,true,false);
                 break;
             }
+            case "give":
+                String rodName=args[2];
+                Player p=(Player) sender;
+                if(EvenMoreFish.rodMap.containsKey(rodName)){
+                    ItemStack itemStack=new ItemStack(Material.FISHING_ROD);
+                    NBTItem nbtItem=new NBTItem(itemStack);
+                    Rod rod=EvenMoreFish.rodMap.get(rodName);
+                    Map<String,String> nbt=rod.getNbt();
+                    if(nbt.containsKey(NbtUtils.Keys.FISHING_SPEED)){
+                        NbtUtils.setFloat(nbtItem,NbtUtils.Keys.FISHING_SPEED,Float.parseFloat(rod.getNbt().get(NbtUtils.Keys.FISHING_SPEED)));
+                    }
+                    if(nbt.containsKey(NbtUtils.Keys.DOUBLE_DROP)){
+                        NbtUtils.setFloat(nbtItem,NbtUtils.Keys.DOUBLE_DROP,Float.parseFloat(rod.getNbt().get(NbtUtils.Keys.DOUBLE_DROP)));
+                    }
+                    ItemMeta itemMeta = nbtItem.getItem().getItemMeta();
+                    itemMeta.setDisplayName(rod.getDisplay());
+                    itemMeta.setLore(rod.getLore());
+                    itemStack.setItemMeta(itemMeta);
+
+                    p.getInventory().addItem(itemStack);
+                    p.sendMessage("获得一个"+rod.getDisplay()+"鱼竿");
+                }else {
+                    p.sendMessage("鱼竿:"+rodName+"不存在");
+                }
+
+
+                break;
             default:
                 new Message(ConfigMessage.HELP_ADMIN).broadcast(sender, true, false);
         }

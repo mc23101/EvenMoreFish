@@ -8,10 +8,58 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.Locale;
 
 public class NbtUtils {
+
+    public static void setFloat(final @NotNull NBTCompound nbtCompound, final String key,final float value){
+        NamespacedKey namespacedKey = getNamespacedKey(key);
+        NBTCompound publicBukkitValues;
+        if(nbtCompound.hasTag(Keys.PUBLIC_BUKKIT_VALUES)){
+            publicBukkitValues = nbtCompound.getCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }else {
+            publicBukkitValues = nbtCompound.addCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }
+        publicBukkitValues.setFloat(namespacedKey.toString(),value);
+    }
+
+
+    public static void setDouble(final @NotNull NBTCompound nbtCompound, final String key,final double value){
+        NamespacedKey namespacedKey = getNamespacedKey(key);
+        NBTCompound publicBukkitValues;
+        if(nbtCompound.hasTag(Keys.PUBLIC_BUKKIT_VALUES)){
+            publicBukkitValues = nbtCompound.getCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }else {
+            publicBukkitValues = nbtCompound.addCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }
+        publicBukkitValues.setDouble(namespacedKey.toString(),value);
+    }
+
+    public static void setInteger(final @NotNull NBTCompound nbtCompound, final String key,final int value){
+        NamespacedKey namespacedKey = getNamespacedKey(key);
+        NBTCompound publicBukkitValues;
+        if(nbtCompound.hasTag(Keys.PUBLIC_BUKKIT_VALUES)){
+            publicBukkitValues = nbtCompound.getCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }else {
+            publicBukkitValues = nbtCompound.addCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }
+        publicBukkitValues.setInteger(namespacedKey.toString(),value);
+    }
+
+    public static void setString(final @NotNull NBTCompound nbtCompound, final String key,final String value){
+        NamespacedKey namespacedKey = getNamespacedKey(key);
+        NBTCompound publicBukkitValues;
+        if(nbtCompound.hasTag(Keys.PUBLIC_BUKKIT_VALUES)){
+            publicBukkitValues = nbtCompound.getCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }else {
+            publicBukkitValues = nbtCompound.addCompound(Keys.PUBLIC_BUKKIT_VALUES);
+        }
+        publicBukkitValues.setString(namespacedKey.toString(),value);
+    }
+
+
     public static boolean hasKey(final @NotNull NBTCompound nbtCompound, final String key) {
         NamespacedKey namespacedKey = getNamespacedKey(key);
         //Pre NBT-API PR
@@ -149,5 +197,9 @@ public class NbtUtils {
 
         public static final String PUBLIC_BUKKIT_VALUES = "PublicBukkitValues";
         public static final String DEFAULT_GUI_ITEM = "default-gui-item";
+
+        public static final String FISHING_SPEED = "fishing-speed";
+
+        public static final String DOUBLE_DROP="double-drop";
     }
 }
