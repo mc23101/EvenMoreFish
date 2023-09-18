@@ -38,13 +38,18 @@ public class ItemFactory {
     private boolean itemGlowCheck;
     private boolean itemLoreCheck;
     private boolean itemPotionMetaCheck;
-    private boolean xmas2022Item;
     private String displayName;
 
-    public ItemFactory(String configLocation, boolean xmas2022Item) {
-        this.xmas2022Item = xmas2022Item;
+    public ItemFactory(String configLocation) {
         this.configLocation = configLocation;
         this.configurationFile = getConfiguration();
+        this.rawMaterial = false;
+        this.product = getType(null);
+    }
+
+    public ItemFactory(FileConfiguration fishConfig,String configLocation) {
+        this.configLocation = configLocation;
+        this.configurationFile = fishConfig;
         this.rawMaterial = false;
         this.product = getType(null);
     }
@@ -568,8 +573,6 @@ public class ItemFactory {
     }
 
     private FileConfiguration getConfiguration() {
-        if (this.xmas2022Item) return EvenMoreFish.xmas2022Config.getConfig();
-
         if (this.configLocation.startsWith("fish.")) {
             return EvenMoreFish.fishFile.getConfig();
         } else if (this.configLocation.startsWith("baits.")) {

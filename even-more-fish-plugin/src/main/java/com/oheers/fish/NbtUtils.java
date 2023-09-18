@@ -9,6 +9,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.omg.CORBA.PUBLIC_MEMBER;
+import org.stringtemplate.v4.ST;
 
 import java.util.Locale;
 
@@ -199,6 +200,8 @@ public class NbtUtils {
         public static final String DEFAULT_GUI_ITEM = "default-gui-item";
 
         public static final String ROD_NAME="rod-name";
+
+        public static final String EXTRA_FISH="extra-fish";
 
         public static final String FISHING_SPEED = "fishing-speed";
 

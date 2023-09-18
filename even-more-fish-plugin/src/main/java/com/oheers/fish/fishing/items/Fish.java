@@ -53,26 +53,65 @@ public class Fish implements Cloneable {
 
     boolean disableFisherman;
 
-    boolean xmasFish;
+    String extraName;
+
     FileConfiguration fishConfig;
     FileConfiguration rarityConfig;
 
     private int day = -1;
 
-    public Fish(Rarity rarity, String name, boolean isXmas2022Fish) throws InvalidFishException {
+    public Fish(Rarity rarity,String extraName, String name) throws InvalidFishException {
         this.rarity = rarity;
         this.name = name;
         this.weight = 0;
+        this.extraName=extraName;
         this.length = -1F;
-        this.xmasFish = isXmas2022Fish;
-        this.setFishAndRarityConfig();
+        System.out.println(extraName);
+        this.rarityConfig = EvenMoreFish.raritiesFile.getConfig();
+        if(extraName==null){
+            this.fishConfig = EvenMoreFish.fishFile.getConfig();
+        }else {
+            fishConfig=EvenMoreFish.extraFishFile.getExtraFishConfig().get(extraName);
+        }
         final boolean defaultRarityDisableFisherman = EvenMoreFish.raritiesFile.getConfig().getBoolean("rarities." + this.rarity.getValue() + ".disable-fisherman", false);
         this.disableFisherman = this.fishConfig.getBoolean("fish." + this.rarity.getValue() + "." + this.name + ".disable-fisherman", defaultRarityDisableFisherman);
 
         if (rarity == null)
             throw new InvalidFishException(name + " could not be fetched from the config.");
 
-        this.factory = new ItemFactory("fish." + this.rarity.getValue() + "." + this.name, this.xmasFish);
+        this.factory = new ItemFactory(fishConfig,"fish." + this.rarity.getValue() + "." + this.name);
+        checkDisplayName();
+
+        // These settings don't mean these will be applied, but they will be considered if the settings exist.
+        factory.enableDefaultChecks();
+        factory.setItemDisplayNameCheck(this.displayName != null);
+        factory.setItemLoreCheck(!this.fishConfig.getBoolean("fish." + this.rarity.getValue() + "." + this.name + ".disable-lore", false));
+
+        setSize();
+        checkEatEvent();
+        checkIntEvent();
+        checkDisplayName();
+        checkSilent();
+
+        fishRewards = new ArrayList<>();
+        checkFishEvent();
+    }
+
+    public Fish(Rarity rarity, String extraName, String name, FileConfiguration configuration) throws InvalidFishException {
+        this.rarity = rarity;
+        this.name = name;
+        this.weight = 0;
+        this.length = -1F;
+        this.extraName=extraName;
+        this.rarityConfig=EvenMoreFish.raritiesFile.getConfig();
+        this.fishConfig=configuration;
+        final boolean defaultRarityDisableFisherman = EvenMoreFish.raritiesFile.getConfig().getBoolean("rarities." + this.rarity.getValue() + ".disable-fisherman", false);
+        this.disableFisherman = this.fishConfig.getBoolean("fish." + this.rarity.getValue() + "." + this.name + ".disable-fisherman", defaultRarityDisableFisherman);
+
+        if (rarity == null)
+            throw new InvalidFishException(name + " could not be fetched from the config.");
+
+        this.factory = new ItemFactory(configuration,"fish." + this.rarity.getValue() + "." + this.name);
         checkDisplayName();
 
         // These settings don't mean these will be applied, but they will be considered if the settings exist.
@@ -95,14 +134,7 @@ public class Fish implements Cloneable {
       This will allow breaking heads that have already been placed with the wrong nbt data.
      */
     private void setFishAndRarityConfig() {
-        if (this.xmasFish && EvenMoreFish.xmas2022Config.getConfig() != null) {
-            this.fishConfig = EvenMoreFish.xmas2022Config.getConfig();
-            this.rarityConfig = EvenMoreFish.xmas2022Config.getConfig();
-        } else {
-            this.xmasFish = false;
-            this.fishConfig = EvenMoreFish.fishFile.getConfig();
-            this.rarityConfig = EvenMoreFish.raritiesFile.getConfig();
-        }
+
     }
 
     /**
@@ -135,10 +167,8 @@ public class Fish implements Cloneable {
             fishMeta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
 
             fish.setItemMeta(fishMeta);
-
             fish = WorthNBT.setNBT(fish, this);
         }
-
         return fish;
     }
 
@@ -425,9 +455,6 @@ public class Fish implements Cloneable {
         return day;
     }
 
-    public boolean isXmasFish() {
-        return xmasFish;
-    }
 
     public boolean isSilent() {
         return silent;
@@ -435,5 +462,9 @@ public class Fish implements Cloneable {
 
     public void setSilent(boolean silent) {
         this.silent = silent;
+    }
+
+    public String getExtraName() {
+        return extraName;
     }
 }

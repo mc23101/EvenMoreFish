@@ -75,7 +75,7 @@ public class FishUtils {
         // Generating an empty rarity
         Rarity rarity = null;
         // Hunting through the fish collection and creating a rarity that matches the fish's nbt
-        for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+        for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
             if (r.getValue().equals(rarityString)) {
                 rarity = new Rarity(r.getValue(), r.getColour(), r.getWeight(), r.getAnnounce(), r.overridenLore);
             }
@@ -83,7 +83,14 @@ public class FishUtils {
 
         // setting the correct length so it's an exact replica.
         try {
-            Fish fish = new Fish(rarity, nameString, isXmasFish);
+            Fish fish;
+            if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
+                String extraName=NbtUtils.getString(nbtItem,NbtUtils.Keys.EXTRA_FISH);
+                fish=new Fish(rarity,extraName,nameString);
+            }else {
+                fish=new Fish(rarity, null,nameString);
+            }
+
             if (randomIndex != null) {
                 fish.getFactory().setType(randomIndex);
             }
@@ -123,14 +130,21 @@ public class FishUtils {
         // Generating an empty rarity
         Rarity rarity = null;
         // Hunting through the fish collection and creating a rarity that matches the fish's nbt
-        for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+        for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
             if (r.getValue().equals(rarityString)) {
                 rarity = new Rarity(r.getValue(), r.getColour(), r.getWeight(), r.getAnnounce(), r.overridenLore);
             }
         }
 
+        NBTItem nbtItem=new NBTItem(fisher.getInventory().getItemInMainHand());
         // setting the correct length and randomIndex, so it's an exact replica.
-        Fish fish = new Fish(rarity, nameString, isXmasFish);
+        Fish fish;
+        if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
+            String extraName=NbtUtils.getString(nbtItem,NbtUtils.Keys.EXTRA_FISH);
+            fish=new Fish(rarity,extraName,nameString);
+        }else {
+            fish=new Fish(rarity, null,nameString);
+        }
         fish.setLength(lengthFloat);
         if (randomIndex != null) {
             fish.getFactory().setType(randomIndex);

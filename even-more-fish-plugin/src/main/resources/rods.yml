@@ -6,5 +6,9 @@ test:
     - "这是一个测试行"
     - "这是一个测试行"
   nbt:
+    # 钓鱼时间减少量
     fishing-speed: 0.9
+    # 双倍掉落的概率
     double-drop: 0.9
+    # 鱼竿额外掉落的配置文件名称
+    extra-fish: fish1

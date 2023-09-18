@@ -73,6 +73,9 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
     // 鱼竿配置文件
     public static RodFile rodFile;
 
+    // 额外的"鱼"配置文件
+    public static ExtraFishFile extraFishFile;
+
     public static Map<String,Rod> rodMap=new HashMap<>();
 
     public static Messages msgs;
@@ -86,7 +89,12 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
     public static Economy econ = null;
     public static Map<Integer, Set<String>> fish = new HashMap<>();
     public static Map<String, Bait> baits = new HashMap<>();
+
+    public static Map<Rarity,List<Fish>> allFishCollection=new HashMap<>();
+
     public static Map<Rarity, List<Fish>> fishCollection = new HashMap<>();
+    public static Map<String,Map<Rarity, List<Fish>>> extraFishCollection=new HashMap<>();
+
     public static Rarity xmasRarity;
     public static final Map<Integer, Fish> xmasFish = new HashMap<>();
     public static List<UUID> disabledPlayers = new ArrayList<>();
@@ -154,12 +162,13 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
         this.addonManager.load();
 
         //加载配置文件
+        xmas2022Config = new Xmas2022Config(this);
         fishFile = new FishFile(this);
         rodFile=new RodFile(this);
         raritiesFile = new RaritiesFile(this);
         baitFile = new BaitFile(this);
+        extraFishFile=new ExtraFishFile(this);
         competitionConfig = new CompetitionConfig(this);
-        xmas2022Config = new Xmas2022Config(this);
         if (mainConfig.debugSession()) {
             guiConfig = new GUIConfig(this);
         }
@@ -195,7 +204,7 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
         competitionWorlds = competitionConfig.getRequiredWorlds();
 
         Names names = new Names();
-        names.loadRarities(fishFile.getConfig(), raritiesFile.getConfig());
+        names.loadRarities(fishFile.getConfig(), raritiesFile.getConfig(),fishCollection);
         names.loadBaits(baitFile.getConfig());
 
         if (!names.regionCheck && mainConfig.getAllowedRegions().isEmpty()) {
@@ -437,7 +446,7 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
     }
 
     public ItemStack createCustomNBTRod() {
-        ItemFactory itemFactory = new ItemFactory("nbt-rod-item", false);
+        ItemFactory itemFactory = new ItemFactory("nbt-rod-item");
         itemFactory.enableDefaultChecks();
         itemFactory.setItemDisplayNameCheck(true);
         itemFactory.setItemLoreCheck(true);
@@ -460,7 +469,7 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
         saveDefaultConfig();
 
         Names names = new Names();
-        names.loadRarities(fishFile.getConfig(), raritiesFile.getConfig());
+        names.loadRarities(fishFile.getConfig(), raritiesFile.getConfig(),fishCollection);
         names.loadBaits(baitFile.getConfig());
 
         HandlerList.unregisterAll(FishEatEvent.getInstance());

@@ -155,7 +155,26 @@ public class FishingProcessor implements Listener {
      *                 {@code @returns} A random fish without any bait application.
      */
     public static Fish chooseNonBaitFish(Player player, Location location) {
-        Rarity fishRarity = randomWeightedRarity(player, 1, null, EvenMoreFish.fishCollection.keySet());
+
+        ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
+        NBTItem nbtItem=new NBTItem(itemInMainHand);
+
+        Map<Rarity,List<Fish>> curFish=new HashMap<>(EvenMoreFish.fishCollection);
+
+        if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
+            String key=NbtUtils.getString(nbtItem,NbtUtils.Keys.EXTRA_FISH);
+            Map<Rarity,List<Fish>> map=EvenMoreFish.extraFishCollection.get(key);
+            for(Rarity r:map.keySet()){
+                if(curFish.containsKey(r)){
+                    curFish.get(r).addAll(map.get(r));
+                }else {
+                    curFish.put(r,new ArrayList<>(map.get(r)));
+                }
+            }
+        }
+
+
+        Rarity fishRarity = randomWeightedRarity(player, 1, null, curFish.keySet());
         if (fishRarity == null) {
             EvenMoreFish.logger.log(Level.SEVERE, "Could not determine a rarity for fish for " + player.getName());
             return null;
@@ -322,14 +341,31 @@ public class FishingProcessor implements Listener {
         List<Rarity> allowedRarities = new ArrayList<>();
 
 
+
         int idx = 0;
 
         /* If allowed rarities has objects, it means we've run through and removed the Christmas rarity. Don't run
            through again */
         if (allowedRarities.isEmpty()) {
             if (fisher != null && EvenMoreFish.permission != null) {
+                ItemStack itemInMainHand = fisher.getInventory().getItemInMainHand();
+                NBTItem nbtItem=new NBTItem(itemInMainHand);
+
+                Map<Rarity,List<Fish>> curFish=new HashMap<>(EvenMoreFish.fishCollection);
+
+                if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
+                    String key=NbtUtils.getString(nbtItem,NbtUtils.Keys.EXTRA_FISH);
+                    Map<Rarity,List<Fish>> map=EvenMoreFish.extraFishCollection.get(key);
+                    for(Rarity r:map.keySet()){
+                        if(curFish.containsKey(r)){
+                            curFish.get(r).addAll(map.get(r));
+                        }else {
+                            curFish.put(r,new ArrayList<>(map.get(r)));
+                        }
+                    }
+                }
                 rarityLoop:
-                for (Rarity rarity : EvenMoreFish.fishCollection.keySet()) {
+                for (Rarity rarity : curFish.keySet()) {
                     if (boostedRarities != null && boostRate == -1 && !boostedRarities.contains(rarity)) {
                         continue;
                     }
@@ -455,9 +491,26 @@ public class FishingProcessor implements Listener {
 
         List<Fish> available = new ArrayList<>();
 
+        ItemStack itemInMainHand = p.getInventory().getItemInMainHand();
+        NBTItem nbtItem=new NBTItem(itemInMainHand);
+
+        Map<Rarity,List<Fish>> curFish=new HashMap<>(EvenMoreFish.fishCollection);
+
+        if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
+            String key=NbtUtils.getString(nbtItem,NbtUtils.Keys.EXTRA_FISH);
+            Map<Rarity,List<Fish>> map=EvenMoreFish.extraFishCollection.get(key);
+            for(Rarity rarity:map.keySet()){
+                if(curFish.containsKey(rarity)){
+                    curFish.get(rarity).addAll(map.get(rarity));
+                }else {
+                    curFish.put(rarity,new ArrayList<>(map.get(rarity)));
+                }
+            }
+        }
+
         // 防止/emf admin重载导致插件无法获得稀有性
-        if (EvenMoreFish.fishCollection.get(r) == null)
-            r = randomWeightedRarity(p, 1, null, EvenMoreFish.fishCollection.keySet());
+        if (curFish.get(r) == null)
+            r = randomWeightedRarity(p, 1, null, curFish.keySet());
 
         if (doRequirementChecks) {
             RequirementContext context = new RequirementContext();
@@ -465,7 +518,7 @@ public class FishingProcessor implements Listener {
             context.setPlayer(p);
 
             fishLoop:
-            for (Fish f : EvenMoreFish.fishCollection.get(r)) {
+            for (Fish f : curFish.get(r)) {
 
                 if (!(boostRate != -1 || boostedFish == null || boostedFish.contains(f))) {
                     continue;
@@ -482,7 +535,7 @@ public class FishingProcessor implements Listener {
                 }
             }
         } else {
-            for (Fish f : EvenMoreFish.fishCollection.get(r)) {
+            for (Fish f : curFish.get(r)) {
 
                 if (!(boostRate != -1 || boostedFish == null || boostedFish.contains(f))) {
                     continue;

@@ -12,7 +12,6 @@ import com.oheers.fish.fishing.items.Fish;
 import com.oheers.fish.fishing.items.Rarity;
 import com.oheers.fish.rods.Rod;
 import com.oheers.fish.selling.SellGUI;
-import com.oheers.fish.xmas2022.XmasGUI;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
@@ -63,7 +62,6 @@ public class CommandCentre implements TabCompleter, CommandExecutor {
                 "gui")
         );
 
-        if (EvenMoreFish.xmas2022Config.isAvailable()) emfTabs.add("xmas");
 
         compTypes = Arrays.asList(
                 "largest_fish",
@@ -186,14 +184,6 @@ public class CommandCentre implements TabCompleter, CommandExecutor {
                     }.runTaskAsynchronously(JavaPlugin.getProvidingPlugin(CommandCentre.class));
                 }
                 break;
-            case "xmas":
-                if (!EvenMoreFish.xmas2022Config.isAvailable()) break;
-                if (!EvenMoreFish.permission.has(sender, "emf.xmas")) {
-                    new Message(ConfigMessage.NO_PERMISSION).broadcast(sender, true, false);
-                } else {
-                    new XmasGUI(((Player) sender).getUniqueId()).display((Player) sender);
-                }
-                break;
             default:
                 sender.sendMessage(Help.formGeneralHelp(sender));
         }
@@ -240,7 +230,7 @@ public class CommandCentre implements TabCompleter, CommandExecutor {
                     return l(args[args.length - 1], compTabs);
                 } else if (args[1].equalsIgnoreCase("fish") && args[0].equalsIgnoreCase("admin") && EvenMoreFish.permission.has(sender, "emf.admin")) {
                     List<String> returning = new ArrayList<>();
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                         returning.add(r.getValue().replace(" ", "_"));
                     }
 
@@ -252,10 +242,10 @@ public class CommandCentre implements TabCompleter, CommandExecutor {
                 }
             case 4:
                 if (args[1].equalsIgnoreCase("fish") && args[0].equalsIgnoreCase("admin") && EvenMoreFish.permission.has(sender, "emf.admin")) {
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                         if (r.getValue().equalsIgnoreCase(args[2].replace("_", " "))) {
                             List<String> fish = new ArrayList<>();
-                            for (Fish f : EvenMoreFish.fishCollection.get(r)) {
+                            for (Fish f : EvenMoreFish.allFishCollection.get(r)) {
                                 fish.add(f.getName().replace(" ", "_"));
                             }
                             return l(args[args.length - 1], fish);
@@ -312,7 +302,7 @@ class Controls {
                     for (String word : args[2].split("_")) {
                         args2.append(word).append(" ");
                     }
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                         String rarityName = args2.substring(0, args2.length() - 1);
                         if (rarityName.equalsIgnoreCase(r.getValue())) {
                             ComponentBuilder builder = new ComponentBuilder();
@@ -322,7 +312,7 @@ class Controls {
                             else
                                 builder.append(FishUtils.translateHexColorCodes(r.getColour() + "&l" + r.getValue() + ": "), ComponentBuilder.FormatRetention.NONE);
 
-                            for (Fish fish : EvenMoreFish.fishCollection.get(r)) {
+                            for (Fish fish : EvenMoreFish.allFishCollection.get(r)) {
                                 if (fish.getDisplayName() != null)
                                     builder.append(FishUtils.translateHexColorCodes(r.getColour() + "[" + fish.getDisplayName() + "] "));
                                 else
@@ -337,7 +327,7 @@ class Controls {
                         }
                     }
                     ComponentBuilder builder = new ComponentBuilder();
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
 
                         if (r.getDisplayName() != null) {
                             builder.append(FishUtils.translateHexColorCodes("&r[" + r.getDisplayName() + "] "));
@@ -396,9 +386,9 @@ class Controls {
                         }
                         String fishName = args3.substring(0, args3.length() - 1);
 
-                        for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                        for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                             if (rarityName.equalsIgnoreCase(r.getValue())) {
-                                for (Fish f : EvenMoreFish.fishCollection.get(r)) {
+                                for (Fish f : EvenMoreFish.allFishCollection.get(r)) {
                                     if (fishName.equalsIgnoreCase(f.getName())) {
 
                                         if (player == null) {
@@ -436,7 +426,7 @@ class Controls {
 
                 } else {
                     BaseComponent baseComponent = new TextComponent("");
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                         BaseComponent tC;
                         if (r.getDisplayName() != null) {
                             tC = new TextComponent(FishUtils.translateHexColorCodes("&r[" + r.getDisplayName() + "] "));
@@ -604,15 +594,15 @@ class Controls {
 
             case "version":
                 int fishCount = 0;
-                for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
-                    fishCount += EvenMoreFish.fishCollection.get(r).size();
+                for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
+                    fishCount += EvenMoreFish.allFishCollection.get(r).size();
                 }
 
                 String msgString = EvenMoreFish.msgs.getSTDPrefix() + "EvenMoreFish by Oheers " + plugin.getDescription().getVersion() + "\n" +
                         EvenMoreFish.msgs.getSTDPrefix() + "MCV: " + Bukkit.getServer().getVersion() + "\n" +
                         EvenMoreFish.msgs.getSTDPrefix() + "SSV: " + Bukkit.getServer().getBukkitVersion() + "\n" +
                         EvenMoreFish.msgs.getSTDPrefix() + "Online: " + Bukkit.getServer().getOnlineMode() + "\n" +
-                        EvenMoreFish.msgs.getSTDPrefix() + "Loaded: Rarities(" + EvenMoreFish.fishCollection.size() + ") Fish(" +
+                        EvenMoreFish.msgs.getSTDPrefix() + "Loaded: Rarities(" + EvenMoreFish.allFishCollection.size() + ") Fish(" +
                         fishCount + ") Baits(" + EvenMoreFish.baits.size() + ") Competitions(" + EvenMoreFish.competitionQueue.getSize() + ")\n" +
                         EvenMoreFish.msgs.getSTDPrefix();
 

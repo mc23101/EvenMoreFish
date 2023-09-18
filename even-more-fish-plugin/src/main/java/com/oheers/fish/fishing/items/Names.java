@@ -7,10 +7,7 @@ import com.oheers.fish.requirements.*;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Names {
@@ -25,12 +22,14 @@ public class Names {
      *  it goes down that branch looking for fish and their names. It then plops all this stuff into the
      *  main fish map. Badabing badaboom we've now populated our fish map.
      */
-    public void loadRarities(FileConfiguration fishConfiguration, FileConfiguration rarityConfiguration) {
+    public void loadRarities(FileConfiguration fishConfiguration, FileConfiguration rarityConfiguration, Map<Rarity,List<Fish>> fishCollection) {
         fishList = new HashSet<>();
 
         // gets all the rarities - just their names, nothing else
         rarities = fishConfiguration.getConfigurationSection("fish").getKeys(false);
         rarities.add("Christmas 2022");
+
+        String extraName=fishConfiguration.getRoot().getString("name");
 
         for (String rarity : rarities) {
 
@@ -58,7 +57,6 @@ public class Names {
             r.setPermission(rarityPermission(rarity));
             r.setDisplayName(rarityDisplayName(rarity));
             r.setRequirements(getRequirements(null, rarity, EvenMoreFish.raritiesFile.getConfig()));
-
             List<Fish> fishQueue = new ArrayList<>();
 
             for (String fish : fishSet) {
@@ -66,13 +64,13 @@ public class Names {
 
                 // for each fish name, a fish object is made that contains the information gathered from that name
                 try {
-                    canvas = new Fish(r, fish, xmasRarity);
+                    canvas = new Fish(r, extraName,fish, fishConfiguration);
                 } catch (InvalidFishException ignored) {
                     // We're looping through the config, this isn't be an issue.
                 }
 
                 assert canvas != null;
-                canvas.setRequirements(getRequirements(fish, rarity, EvenMoreFish.fishFile.getConfig()));
+                canvas.setRequirements(getRequirements(fish, rarity, fishConfiguration));
                 weightCheck(canvas, fish, r, rarity);
                 fishQueue.add(canvas);
 
@@ -90,7 +88,13 @@ public class Names {
             }
 
             // puts the collection of fish and their rarities into the main class
-            EvenMoreFish.fishCollection.put(r, fishQueue);
+            fishCollection.put(r, fishQueue);
+
+            if(EvenMoreFish.allFishCollection.containsKey(r)){
+                EvenMoreFish.allFishCollection.get(r).addAll(fishQueue);
+            }else {
+                EvenMoreFish.allFishCollection.put(r,fishQueue);
+            }
 
             // memory saving or something
             fishList.clear();
@@ -109,7 +113,7 @@ public class Names {
             if (!(rarityList = baitConfiguration.getStringList("baits." + s + ".rarities")).isEmpty()) {
                 for (String rarityString : rarityList) {
                     boolean foundRarity = false;
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                         if (r.getValue().equalsIgnoreCase(rarityString)) {
                             bait.addRarity(r);
                             foundRarity = true;
@@ -124,7 +128,7 @@ public class Names {
             if (baitConfiguration.getConfigurationSection("baits." + s + ".fish") != null) {
                 for (String rarityString : baitConfiguration.getConfigurationSection("baits." + s + ".fish").getKeys(false)) {
                     Rarity rarity = null;
-                    for (Rarity r : EvenMoreFish.fishCollection.keySet()) {
+                    for (Rarity r : EvenMoreFish.allFishCollection.keySet()) {
                         if (r.getValue().equalsIgnoreCase(rarityString)) {
                             rarity = r;
                             break;
@@ -136,7 +140,7 @@ public class Names {
                     } else {
                         for (String fishString : baitConfiguration.getStringList("baits." + s + ".fish." + rarityString)) {
                             boolean foundFish = false;
-                            for (Fish f : EvenMoreFish.fishCollection.get(rarity)) {
+                            for (Fish f : EvenMoreFish.allFishCollection.get(rarity)) {
                                 if (f.getName().equalsIgnoreCase(fishString)) {
                                     bait.addFish(f);
                                     foundFish = true;

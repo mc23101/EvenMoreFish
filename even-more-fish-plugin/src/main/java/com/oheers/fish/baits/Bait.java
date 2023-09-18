@@ -2,6 +2,7 @@ package com.oheers.fish.baits;
 
 import com.oheers.fish.EvenMoreFish;
 import com.oheers.fish.FishUtils;
+import com.oheers.fish.NbtUtils;
 import com.oheers.fish.config.messages.ConfigMessage;
 import com.oheers.fish.config.messages.Message;
 import com.oheers.fish.config.messages.OldMessage;
@@ -9,16 +10,14 @@ import com.oheers.fish.fishing.FishingProcessor;
 import com.oheers.fish.fishing.items.Fish;
 import com.oheers.fish.fishing.items.Rarity;
 import com.oheers.fish.utils.ItemFactory;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Bait {
 
@@ -58,7 +57,7 @@ public class Bait {
         this.displayName = EvenMoreFish.baitFile.getDisplayName(this.name);
         this.dropQuantity = EvenMoreFish.baitFile.getDropQuantity(this.name);
 
-        this.itemFactory = new ItemFactory("baits." + name, false);
+        this.itemFactory = new ItemFactory("baits." + name);
 
         this.itemFactory.enableDefaultChecks();
         this.itemFactory.setItemDisplayNameCheck(true);
@@ -162,14 +161,31 @@ public class Bait {
         Set<Rarity> boostedRarities = new HashSet<>(getRarityList());
         boostedRarities.addAll(fishListRarities);
 
-        Rarity fishRarity = FishingProcessor.randomWeightedRarity(player, getBoostRate(), boostedRarities, EvenMoreFish.fishCollection.keySet());
+        ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
+        NBTItem nbtItem=new NBTItem(itemInMainHand);
+
+        Map<Rarity,List<Fish>> curFish=new HashMap<>(EvenMoreFish.fishCollection);
+
+        if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
+            String key=NbtUtils.getString(nbtItem,NbtUtils.Keys.EXTRA_FISH);
+            Map<Rarity,List<Fish>> map=EvenMoreFish.extraFishCollection.get(key);
+            for(Rarity r:map.keySet()){
+                if(curFish.containsKey(r)){
+                    curFish.get(r).addAll(map.get(r));
+                }else {
+                    curFish.put(r,new ArrayList<>(map.get(r)));
+                }
+            }
+        }
+
+        Rarity fishRarity = FishingProcessor.randomWeightedRarity(player, getBoostRate(), boostedRarities, curFish.keySet());
         Fish fish;
 
         if (!getFishList().isEmpty()) {
             // The bait has both rarities: and fish: set but the plugin chose a rarity with no boosted fish. This ensures
             // the method isn't given an empty list.
             if (!fishListRarities.contains(fishRarity)) {
-                fish = FishingProcessor.getFish(fishRarity, location, player, EvenMoreFish.baitFile.getBoostRate(), EvenMoreFish.fishCollection.get(fishRarity), true);
+                fish = FishingProcessor.getFish(fishRarity, location, player, EvenMoreFish.baitFile.getBoostRate(), curFish.get(fishRarity), true);
             } else {
                 fish = FishingProcessor.getFish(fishRarity, location, player, EvenMoreFish.baitFile.getBoostRate(), getFishList(), true);
             }
