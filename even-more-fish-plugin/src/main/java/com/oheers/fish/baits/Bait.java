@@ -151,6 +151,11 @@ public class Bait {
      * * Pick a rarity, boosting all rarities referenced in the fishList, from that rarity choose a random fish, if that
      * fish is within the fishList then give it to the player as the fish roll. REMOVE BAIT
      *
+     * 这将基于诱饵配置的集合增益选择随机的鱼。
+     * 如果rarityList中有稀有性，首先选择一个稀有性，应用权重乘法。如果服务器列表中没有稀有物品:*检查是否有任何鱼在这个稀有物品的诱饵中，提高他们。如果选择的稀有性没有增强，检查是否有鱼在这个稀有性中并增强它们。删除诱饵
+     * *选择稀有物品，提升fishList中的所有稀有物品，从稀有物品中随机选择一条鱼，如果这条鱼在fishList中，那么就把它作为鱼送给玩家。删除诱饵
+     *
+     *
      * @return A chosen fish.
      */
     public Fish chooseFish(Player player, Location location) {

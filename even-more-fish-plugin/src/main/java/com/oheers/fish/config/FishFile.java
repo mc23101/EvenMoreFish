@@ -6,11 +6,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FishFile {
 
     private final EvenMoreFish plugin;
     private FileConfiguration fishConfig;
+
+    private List<FileConfiguration> extFishConfig=new ArrayList<>();
 
     public FishFile(EvenMoreFish plugin) {
         this.plugin = plugin;

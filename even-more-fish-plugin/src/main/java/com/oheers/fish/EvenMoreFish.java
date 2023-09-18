@@ -60,10 +60,17 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
     public static final int MSG_CONFIG_VERSION = 16;
     public static final int MAIN_CONFIG_VERSION = 14;
     public static final int COMP_CONFIG_VERSION = 1;
+
+    // "鱼"配置文件(钓鱼的掉落物)
     public static FishFile fishFile;
+
+    // 稀有度配置文件
     public static RaritiesFile raritiesFile;
+
+    //诱饵配置文件
     public static BaitFile baitFile;
 
+    // 鱼竿配置文件
     public static RodFile rodFile;
 
     public static Map<String,Rod> rodMap=new HashMap<>();
@@ -245,6 +252,7 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
 
         logger.log(Level.INFO, "EvenMoreFish by Oheers : Enabled");
     }
+
 
     @Override
     public void onDisable() {

@@ -76,10 +76,10 @@ public class FishingProcessor implements Listener {
 
         // 判断鱼竿有没有时间加成
         if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.FISHING_SPEED)){
-            Float value=NbtUtils.getFloat(nbtItem,NbtUtils.Keys.FISHING_SPEED);
+            String value=NbtUtils.getString(nbtItem,NbtUtils.Keys.FISHING_SPEED);
             if(value!=null){
-                int maxTime= (int)Math.floor(EvenMoreFish.mainConfig.getFishingMaxWaitTime()*(1-value));
-                int minTime=(int)Math.floor(EvenMoreFish.mainConfig.getFishingMinWaitTime()*(1-value));
+                int maxTime= (int)Math.floor(EvenMoreFish.mainConfig.getFishingMaxWaitTime()*(1-Float.parseFloat(value)));
+                int minTime=(int)Math.floor(EvenMoreFish.mainConfig.getFishingMinWaitTime()*(1-Float.parseFloat(value)));
                 event.getHook().setMinWaitTime(minTime);
                 event.getHook().setMaxWaitTime(maxTime);
             }
@@ -94,11 +94,11 @@ public class FishingProcessor implements Listener {
             }
 
             if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.DOUBLE_DROP)){
-                Float change=NbtUtils.getFloat(nbtItem,NbtUtils.Keys.DOUBLE_DROP);
+                String change=NbtUtils.getString(nbtItem,NbtUtils.Keys.DOUBLE_DROP);
                 if(change!=null){
                     Random rand=new Random();
                     float randDouble = rand.nextFloat();
-                    if (randDouble<=change){
+                    if (randDouble<=Float.parseFloat(change)){
                         fish.setAmount(2);
                         event.getPlayer().sendMessage("恭喜你获得双倍奖励!");
                     }
@@ -306,6 +306,7 @@ public class FishingProcessor implements Listener {
                 }
             }.runTaskAsynchronously(EvenMoreFish.getProvidingPlugin(EvenMoreFish.class));
         }
+
 
         return fish.give(-1);
     }

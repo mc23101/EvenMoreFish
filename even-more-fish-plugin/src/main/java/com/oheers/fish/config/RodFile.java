@@ -1,6 +1,7 @@
 package com.oheers.fish.config;
 
 import com.oheers.fish.EvenMoreFish;
+import com.oheers.fish.NbtUtils;
 import com.oheers.fish.rods.Rod;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -59,9 +60,11 @@ public class RodFile {
                 for(String nbt:keys){
                     nbtMap.put(nbt,this.rodConfig.getConfigurationSection(rod+".nbt").getString(nbt));
                 }
+                nbtMap.put(NbtUtils.Keys.ROD_NAME,rod);
                 rodEntity.setNbt(nbtMap);
             }
-            EvenMoreFish.rodMap=rodMap;
+            rodMap.put(rod,rodEntity);
         }
+        EvenMoreFish.rodMap=rodMap;
     }
 }

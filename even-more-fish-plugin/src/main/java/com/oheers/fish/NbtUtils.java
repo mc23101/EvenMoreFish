@@ -198,6 +198,8 @@ public class NbtUtils {
         public static final String PUBLIC_BUKKIT_VALUES = "PublicBukkitValues";
         public static final String DEFAULT_GUI_ITEM = "default-gui-item";
 
+        public static final String ROD_NAME="rod-name";
+
         public static final String FISHING_SPEED = "fishing-speed";
 
         public static final String DOUBLE_DROP="double-drop";

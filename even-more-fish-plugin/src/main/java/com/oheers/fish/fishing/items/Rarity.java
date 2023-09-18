@@ -107,4 +107,15 @@ public class Rarity {
     public List<Requirement> getRequirements() {
         return requirements;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Rarity rarity=(Rarity) obj;
+        return this.value.equals(rarity.value);
+    }
 }

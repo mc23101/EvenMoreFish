@@ -649,11 +649,9 @@ class Controls {
                     NBTItem nbtItem=new NBTItem(itemStack);
                     Rod rod=EvenMoreFish.rodMap.get(rodName);
                     Map<String,String> nbt=rod.getNbt();
-                    if(nbt.containsKey(NbtUtils.Keys.FISHING_SPEED)){
-                        NbtUtils.setFloat(nbtItem,NbtUtils.Keys.FISHING_SPEED,Float.parseFloat(rod.getNbt().get(NbtUtils.Keys.FISHING_SPEED)));
-                    }
-                    if(nbt.containsKey(NbtUtils.Keys.DOUBLE_DROP)){
-                        NbtUtils.setFloat(nbtItem,NbtUtils.Keys.DOUBLE_DROP,Float.parseFloat(rod.getNbt().get(NbtUtils.Keys.DOUBLE_DROP)));
+                    for(String key:nbt.keySet()){
+                        NbtUtils.setString(nbtItem,key,nbt.get(key));
+                        System.out.println(key);
                     }
                     ItemMeta itemMeta = nbtItem.getItem().getItemMeta();
                     itemMeta.setDisplayName(rod.getDisplay());

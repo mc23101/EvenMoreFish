@@ -114,10 +114,13 @@ public class Fish implements Cloneable {
      * @return An ItemStack version of the fish.
      */
     public ItemStack give(int randomIndex) {
-
         ItemStack fish = factory.createItem(getFishermanPlayer(), randomIndex);
-        if (factory.isRawMaterial()) return fish;
+//        System.out.println(factory.isRawMaterial());
+//        if (factory.isRawMaterial()) {
+//            return fish;
+//        }
         ItemMeta fishMeta;
+
 
         if ((fishMeta = fish.getItemMeta()) != null) {
             if (displayName != null) fishMeta.setDisplayName(FishUtils.translateHexColorCodes(displayName));
