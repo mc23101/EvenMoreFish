@@ -10,6 +10,9 @@ import com.oheers.fish.config.messages.ConfigMessage;
 import com.oheers.fish.config.messages.Message;
 import com.oheers.fish.fishing.items.Fish;
 import com.oheers.fish.fishing.items.Rarity;
+import com.oheers.fish.gui.BatisGUI;
+import com.oheers.fish.gui.FillerStyle;
+import com.oheers.fish.gui.FishingGUI;
 import com.oheers.fish.rods.Rod;
 import com.oheers.fish.selling.SellGUI;
 import de.tr7zw.changeme.nbtapi.NBTItem;
@@ -183,6 +186,10 @@ public class CommandCentre implements TabCompleter, CommandExecutor {
                         }
                     }.runTaskAsynchronously(JavaPlugin.getProvidingPlugin(CommandCentre.class));
                 }
+                break;
+            case "gui":
+                BatisGUI batisGUI=new BatisGUI();
+                batisGUI.display((Player) sender);
                 break;
             default:
                 sender.sendMessage(Help.formGeneralHelp(sender));

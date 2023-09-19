@@ -87,6 +87,9 @@ public class FishingProcessor implements Listener {
 
 
         if (event.getState() == PlayerFishEvent.State.CAUGHT_FISH) {
+
+
+            // 获取掉到的鱼
             ItemStack fish = getFish(event.getPlayer(), event.getHook().getLocation(), event.getPlayer().getInventory().getItemInMainHand(), true, true);
 
             if (fish == null) {
@@ -114,32 +117,7 @@ public class FishingProcessor implements Listener {
                     nonCustom.setItemStack(fish);
                 }
             }
-        } /*else if (event.getState() == PlayerFishEvent.State.FISHING) {
-            if (!EvenMoreFish.decidedRarities.containsKey(event.getPlayer().getUniqueId())) {
-                EvenMoreFish.decidedRarities.put(event.getPlayer().getUniqueId(), randomWeightedRarity(event.getPlayer(), 1, null));
-            }
-
-
-            if (EvenMoreFish.decidedRarities.get(event.getPlayer().getUniqueId()).isXmas2021()) {
-
-                if (!Objects.equals(EvenMoreFish.xmas2021Config.getParticleMessage(), "none")) {
-                    event.getPlayer().sendMessage(FishUtils.translateHexColorCodes(EvenMoreFish.xmas2021Config.getParticleMessage()));
-                }
-
-                if (EvenMoreFish.xmas2021Config.doXmas2021Particles()) {
-                    ParticleEngine.renderParticles(event.getHook());
-                }
-            }
-            - if the rarity is exposed by having particles showing
-             */
-
-        // } else if (event.getState() == PlayerFishEvent.State.REEL_IN) {
-            /* For a failed attempt the player needs to have triggered a FISHING which generates a pre-decided rarity.
-            if (EvenMoreFish.decidedRarities.get(event.getPlayer().getUniqueId()).isXmas2021()) {
-                EvenMoreFish.decidedRarities.remove(event.getPlayer().getUniqueId());
-            }
-
-        } */
+        }
     }
 
     public static boolean isCustomFishAllowed(UUID player) {
@@ -207,6 +185,7 @@ public class FishingProcessor implements Listener {
             }
         }
 
+        //  ?????
         if (EvenMoreFish.baitFile.getBaitCatchPercentage() > 0) {
             if (new Random().nextDouble() * 100.0 < EvenMoreFish.baitFile.getBaitCatchPercentage()) {
                 Bait caughtBait = BaitNBTManager.randomBaitCatch();
@@ -215,17 +194,24 @@ public class FishingProcessor implements Listener {
                 message.setBait(caughtBait.getName());
                 message.setPlayer(player.getName());
                 message.broadcast(player, true, true);
-
+                System.out.println("这个是什么逻辑呢？");
                 return caughtBait.create(player);
             }
         }
 
-        Fish fish;
+        Fish fish=null;
+
 
         if (BaitNBTManager.isBaitedRod(fishingRod) && (!EvenMoreFish.baitFile.competitionsBlockBaits() || !Competition.isActive())) {
-
+            //手上鱼竿装备了特殊鱼饵，且 比赛允许使用鱼饵或者没有进入比赛
+            //调用鱼饵功能
             Bait applyingBait = BaitNBTManager.randomBaitApplication(fishingRod);
-            fish = applyingBait.chooseFish(player, location);
+            if (applyingBait != null) {
+                fish = applyingBait.chooseFish(player, location);
+            }
+            if(fish==null){
+                return new ItemStack(Material.AIR);
+            }
             if (fish.isWasBaited()) {
                 fish.setFisherman(player.getUniqueId());
                 try {
@@ -239,6 +225,7 @@ public class FishingProcessor implements Listener {
                 fish = chooseNonBaitFish(player, location);
             }
         } else {
+            // 获取没有鱼饵的钓鱼结果
             fish = chooseNonBaitFish(player, location);
         }
 

@@ -82,7 +82,7 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
 
     public static MainConfig mainConfig;
     public static CompetitionConfig competitionConfig;
-    public static Xmas2022Config xmas2022Config;
+
     public static GUIConfig guiConfig;
     public static List<String> competitionWorlds = new ArrayList<>();
     public static Permission permission = null;
@@ -95,8 +95,6 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
     public static Map<Rarity, List<Fish>> fishCollection = new HashMap<>();
     public static Map<String,Map<Rarity, List<Fish>>> extraFishCollection=new HashMap<>();
 
-    public static Rarity xmasRarity;
-    public static final Map<Integer, Fish> xmasFish = new HashMap<>();
     public static List<UUID> disabledPlayers = new ArrayList<>();
     public static ItemStack customNBTRod;
     public static boolean checkingEatEvent;
@@ -162,7 +160,6 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
         this.addonManager.load();
 
         //加载配置文件
-        xmas2022Config = new Xmas2022Config(this);
         fishFile = new FishFile(this);
         rodFile=new RodFile(this);
         raritiesFile = new RaritiesFile(this);
@@ -480,7 +477,6 @@ public class EvenMoreFish extends JavaPlugin implements EMFPlugin {
         mainConfig.reload();
         msgs.reload();
         competitionConfig.reload();
-        xmas2022Config.reload();
         if (mainConfig.debugSession()) {
             guiConfig.reload();
         }

@@ -110,7 +110,7 @@ public class Rarity {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return this.value.hashCode();
     }
 
     @Override

@@ -25,6 +25,7 @@ public class Bait {
     private final String name, displayName, theme;
     private final int maxApplications, dropQuantity;
     List<Fish> fishList = new ArrayList<>();
+
     List<Rarity> rarityList = new ArrayList<>();
     Set<Rarity> fishListRarities = new HashSet<>();
     double boostRate, applicationWeight, catchWeight;
@@ -76,7 +77,11 @@ public class Bait {
         baitItem.setAmount(dropQuantity);
 
         ItemMeta meta = baitItem.getItemMeta();
-        if (meta != null) meta.setLore(createBoostLore());
+
+        if (meta != null) {
+            if (displayName != null) meta.setDisplayName(FishUtils.translateHexColorCodes(displayName));
+            meta.setLore(createBoostLore());
+        }
         baitItem.setItemMeta(meta);
 
         return BaitNBTManager.applyBaitNBT(baitItem, this.name);
@@ -160,10 +165,8 @@ public class Bait {
     public Fish chooseFish(Player player, Location location) {
         Set<Rarity> boostedRarities = new HashSet<>(getRarityList());
         boostedRarities.addAll(fishListRarities);
-
         ItemStack itemInMainHand = player.getInventory().getItemInMainHand();
         NBTItem nbtItem=new NBTItem(itemInMainHand);
-
         Map<Rarity,List<Fish>> curFish=new HashMap<>(EvenMoreFish.fishCollection);
 
         if(NbtUtils.hasKey(nbtItem,NbtUtils.Keys.EXTRA_FISH)){
@@ -181,6 +184,8 @@ public class Bait {
         Rarity fishRarity = FishingProcessor.randomWeightedRarity(player, getBoostRate(), boostedRarities, curFish.keySet());
         Fish fish;
 
+
+        // 如果鱼饵 指定品质 特定的鱼列表不为空，则从特定的鱼中随机    否则从 当前鱼竿可钓到的鱼列表中随机
         if (!getFishList().isEmpty()) {
             // The bait has both rarities: and fish: set but the plugin chose a rarity with no boosted fish. This ensures
             // the method isn't given an empty list.
@@ -193,13 +198,13 @@ public class Bait {
 
             if (!getRarityList().contains(fishRarity) && (fish == null || !getFishList().contains(fish))) {
                 // boost effect chose a fish but the randomizer didn't pick out the right fish - they've been incorrectly boosted.
-                fish = FishingProcessor.getFish(fishRarity, location, player, 1, null, true);
+                fish = FishingProcessor.getFish(fishRarity, location, player, 1, curFish.get(fishRarity), true);
                 if (fish != null) fish.setWasBaited(false);
             } else {
                 alertUsage(player);
             }
         } else {
-            fish = FishingProcessor.getFish(fishRarity, location, player, 1, null, true);
+            fish = FishingProcessor.getFish(fishRarity, location, player, 1,  curFish.get(fishRarity), true);
             if (getRarityList().contains(fishRarity)) {
                 alertUsage(player);
                 if (fish != null) fish.setWasBaited(true);
